@@ -22,8 +22,7 @@ Or install it yourself as:
 For a Rails application you can add the limiting on a controller level.
 ```ruby
 class MyController < Base::ApplicationController
-  include Raterr
-  Raterr.enforce(period: :hour, max: 100)
+  Raterr.enforce(@request, period: :hour, max: 100)
 
   def index
     @users = User.all
