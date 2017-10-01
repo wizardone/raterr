@@ -2,15 +2,16 @@ require 'raterr/version'
 
 module Raterr
 
-  attr_reader :request, :period, :max
-
   AVAILABLE_PERIODS = [:minute, :hour, :day, :week, :month].freeze
-  DEFAULT_MAX = 100.freeze
+  DEFAULTS = {
+    attempts: 100,
+    period: :hour
+  }.freeze
 
   def self.enforce(request, **options)
-    @request = request
-    @period = options[:period] || :hour
-    @max = options[:max] || 100
-    PeriodBuilder.new(request, options)
+    period = options[:period] || DEFAULTS[:period]
+    max = options[:max] || DEFAULTS[:attempts]
+
+    PeriodBuilder.call(request, period, max)
   end
 end
