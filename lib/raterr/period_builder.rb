@@ -4,32 +4,29 @@ module Raterr
     attr_reader :request, :period, :max
 
     class << self
-      def call(request, period, max)
-        new(request, period, max).build
+      def call(request, options)
+        new(request, options).build
       end
     end
 
-    def initialize(request, period, max)
+    def initialize(request, options)
+      @period = options[:period] || DEFAULTS[:period]
+      @max = options[:max] || DEFAULTS[:max]
       @request = request
-      @period = period
-      @max = max
     end
 
     def build
-      case period
-      when :minute
-        Raterr::Minute.new(request, max)
-      when :hour
-        Raterr::Hour.new((request, max))
-      when :day
-        Raterr::Day.new(request, max)
-      when :week
-        Raterr::Week.new(request, max)
-      when :month
-        Raterr::Month.new(request, max)
-      else
-        raise "Invalid limit period, available options are: #{Raterr::AVAILABLE_PERIODS.join(', ')}"
-      end
+      klass = case period
+        when :minute
+          Raterr::Minute
+        when :hour
+          Raterr::Hour
+        when :day
+          Raterr::Day
+        else
+          raise "Invalid limit period, available options are: #{Raterr::AVAILABLE_PERIODS.join(', ')}"
+        end
+      klass.new(request,  max)
     end
   end
 end
