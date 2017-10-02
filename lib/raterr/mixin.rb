@@ -1,4 +1,3 @@
-require 'byebug'
 module Raterr
   module Mixin
 
@@ -22,8 +21,8 @@ module Raterr
     end
 
     def allowed?
-      attempts = fetch_cache[:attempts]
-      attempts <= max_per_period
+      reset_cache if Time.now > rate_period
+      fetch_cache[:attempts] <= max_per_period
     end
 
     def proceed
@@ -44,6 +43,10 @@ module Raterr
       end
 
       cache.write(identifier, cache_attributes)
+    end
+
+    def reset_cache
+      cache.delete(identifier)
     end
 
     def cache
