@@ -18,8 +18,13 @@ module Raterr
     name: 'rate_limit_attempts'
   }.freeze
 
-  def self.enforce(request, **options)
-    period = PeriodBuilder.call(request, options)
-    period.allowed? ? period.proceed : period.rate_limit_exceeded
+  class << self
+
+    attr_accessor :store
+
+    def enforce(request, **options)
+      period = PeriodBuilder.call(request, options)
+      period.allowed? ? period.proceed : period.rate_limit_exceeded
+    end
   end
 end

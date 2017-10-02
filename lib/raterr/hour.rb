@@ -4,13 +4,19 @@ module Raterr
 
     include Mixin
 
+    MINUTES_PER_HOUR = 60.freeze
+
     def max_per_hour
       max
     end
     alias_method :max_per_period, :max_per_hour
 
-    def try_after(time_exceeded)
-      "#{60 - ((time_exceeded - start_time) / 60).ceil} minutes"
+    def rate_period
+      start_time + 3600
+    end
+
+    def try_after
+      "#{MINUTES_PER_HOUR - ((Time.now - start_time) / MINUTES_PER_HOUR).ceil} minutes"
     end
   end
 end

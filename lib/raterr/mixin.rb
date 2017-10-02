@@ -11,13 +11,8 @@ module Raterr
     def rate_limit_exceeded
       {
         status: Raterr::DEFAULTS[:code],
-        text: Raterr::DEFAULTS[:message] % { time: try_after(Time.now) }
+        text: Raterr::DEFAULTS[:message] % { time: try_after }
       }
-    end
-
-    def identifier
-      # TODO: extend with other options from the request
-      request.ip.to_s
     end
 
     def allowed?
@@ -32,6 +27,11 @@ module Raterr
 
     private
 
+    def identifier
+      # TODO: extend with other options from the request
+      request.ip.to_s
+    end
+
     def fetch_cache
       cache.fetch(identifier) { { attempts: 1, start_time: Time.now } }
     end
@@ -41,8 +41,8 @@ module Raterr
         cache[:attempts] = value
         cache[:start_time] = start_time
       end
-
-      cache.write(identifier, cache_attributes)
+      cache.is_a?(Hash) ? cache[identifier] = cache_attributes :
+                          cache.write(identifier, cache_attributes)
     end
 
     def reset_cache
@@ -50,7 +50,7 @@ module Raterr
     end
 
     def cache
-      Raterr::Cache.store
+      Raterr.store
     end
 
     def start_time
