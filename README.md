@@ -1,5 +1,7 @@
 # Raterr
 
+[![codecov](https://codecov.io/gh/wizardone/raterr/branch/master/graph/badge.svg)](https://codecov.io/gh/wizardone/raterr)
+
 `Raterr` allows you to enforce rate limiting restrictions on visitors
 
 ## Installation
@@ -19,13 +21,33 @@ Or install it yourself as:
     $ gem install raterr
 
 ## Usage
-For a Rails application you can add the limiting on a controller level.
+For Rails application you need to tell `Raterr` what store to use.
+Currently it supports a simple hash or a `ActiveSupport::Cache::MemoryStore`
+It is best to do that in an initializer like so:
+```ruby
+# Use either
+Raterr::Cache.store = ActiveSupport::Cache::MemoryStore.new
+# Or
+Raterr::Cache.store = Hash.new
+```
+
+Then you can add the limiting on a controller level.
 ```ruby
 class MyController < Base::ApplicationController
-  Raterr.enforce(@request, period: :hour, max: 100)
+  before_action :rate_limit, only: :index
 
   def index
-    @users = User.all
+    # Do something cool
+  end
+
+  private
+
+  def rate_limit
+    result = Raterr.enforce(request, period: :minute, max: 10)
+    if result[:status] == 429
+      # Do whatever you want to do when the rate limit is reached
+      render plain: result[:text], status: result[:status] and return
+    end
   end
 end
 ```
@@ -36,7 +58,7 @@ You can configure the period and the max attempts. The allowed periods
 are: `:minute, :hour, :day, :week`
 
 Currently `Raterr` checks the unique ip address of the visitor to
-determine the amount the visits
+determine the amount the visits.
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
