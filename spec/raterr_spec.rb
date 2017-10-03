@@ -25,6 +25,14 @@ RSpec.describe Raterr do
     let(:request) { Request.new }
     let(:options) { { period: :minute, max: 5 } }
 
+    it 'raises an error if bogus store is provided' do
+      Raterr.store = Array.new
+
+      expect {
+        described_class.enforce(request, options)
+      }.to raise_error(Raterr::InvalidStore)
+    end
+
     it 'call the period builder and returns a new period' do
       period = instance_double(Raterr::Minute, allowed?: true, proceed: { attempts: 1 })
       expect(Raterr::PeriodBuilder)

@@ -1,3 +1,4 @@
+require 'active_support'
 require 'raterr/version'
 require 'raterr/period_builder'
 require 'raterr/mixin'
@@ -6,6 +7,8 @@ require 'raterr/day'
 require 'raterr/minute'
 
 module Raterr
+
+  InvalidStore = Class.new(StandardError)
 
   AVAILABLE_PERIODS = [:minute, :hour, :day, :week, :month].freeze
   DEFAULTS = {
@@ -20,6 +23,10 @@ module Raterr
     attr_accessor :store
 
     def enforce(request, **options)
+      unless store.is_a?(Hash) || store.is_a?(::ActiveSupport::Cache::MemoryStore)
+        raise InvalidStore.new('Store is not valid, please refer to the documentation')
+      end
+
       period = PeriodBuilder.call(request, options)
       period.allowed? ? period.proceed : period.rate_limit_exceeded
     end

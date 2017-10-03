@@ -2,7 +2,8 @@
 [![Build Status](https://travis-ci.org/wizardone/raterr.svg?branch=master)](https://travis-ci.org/wizardone/raterr)
 [![codecov](https://codecov.io/gh/wizardone/raterr/branch/master/graph/badge.svg)](https://codecov.io/gh/wizardone/raterr)
 
-`Raterr` allows you to enforce rate limiting restrictions on visitors
+`Raterr` allows you to enforce rate limiting restrictions based on ip
+address.
 
 ## Installation
 
@@ -35,9 +36,13 @@ To enforce rate limiting use:
 ```ruby
 Raterr.enforce(request, period: :minute, max: 200, code: 429)
 ```
+`request` might be any data type that has an `ip` method. For Rails
+applications that would be the request method.
+
 The result of `Raterr.enforce` is always a pseudo status. In case the
 rate limit has not been reached you will get a pseudo `200` status + the
-number of attempts. This allows you to do additional checks. If
+number of attempts made. This allows you to do additional checks (say a
+warning if you are about to reach the threshhold). If
 it has been reached you will get whatever status you configured, or the
 default one, which is 429 + a text message.
 
@@ -68,9 +73,9 @@ application controller and so on...
 
 You can configure the period error code and the max attempts. The allowed periods
 are: `:minute, :hour, :day`.
+The default error code is `429`.
+The default max attempts is `100`.
 
-Currently `Raterr` checks the unique ip address of the visitor to
-determine the amount of visits.
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
