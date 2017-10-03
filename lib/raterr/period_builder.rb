@@ -1,7 +1,7 @@
 module Raterr
   class PeriodBuilder
 
-    attr_reader :request, :period, :max
+    attr_reader :request, :period, :options
 
     class << self
       def call(request, options)
@@ -11,8 +11,8 @@ module Raterr
 
     def initialize(request, options)
       @period = options[:period] || DEFAULTS[:period]
-      @max = options[:max] || DEFAULTS[:max]
       @request = request
+      @options = options
     end
 
     def build
@@ -26,7 +26,7 @@ module Raterr
         else
           raise "Invalid limit period, available options are: #{Raterr::AVAILABLE_PERIODS.join(', ')}"
         end
-      klass.new(request,  max)
+      klass.new(request, options)
     end
   end
 end

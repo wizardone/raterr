@@ -1,4 +1,3 @@
-require 'byebug'
 module Raterr
   class Hour
 
@@ -7,7 +6,7 @@ module Raterr
     MINUTES_PER_HOUR = 60.freeze
 
     def max_per_hour
-      max
+      options[:max]
     end
     alias_method :max_per_period, :max_per_hour
 

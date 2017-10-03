@@ -1,4 +1,3 @@
-require 'byebug'
 module Raterr
   class Day
 
@@ -7,7 +6,7 @@ module Raterr
     HOURS_PER_DAY = 24.freeze
 
     def max_per_day
-      max
+      options[:max]
     end
     alias_method :max_per_period, :max_per_day
 

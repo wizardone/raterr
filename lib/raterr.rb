@@ -1,8 +1,6 @@
 require 'raterr/version'
-require 'raterr/cache'
 require 'raterr/period_builder'
 require 'raterr/mixin'
-require 'raterr/minute'
 require 'raterr/hour'
 require 'raterr/day'
 require 'raterr/minute'
@@ -14,8 +12,7 @@ module Raterr
     max: 100,
     code: 429,
     message: "Rate limit exceeded. Try again in %{time}.",
-    period: :hour,
-    name: 'rate_limit_attempts'
+    period: :hour
   }.freeze
 
   class << self

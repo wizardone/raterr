@@ -1,16 +1,16 @@
 module Raterr
   module Mixin
 
-    attr_reader :request, :max
+    attr_reader :request, :options
 
-    def initialize(request, max)
+    def initialize(request, options)
       @request = request
-      @max = max
+      @options = options
     end
 
     def rate_limit_exceeded
       {
-        status: Raterr::DEFAULTS[:code],
+        status: options[:code] || Raterr::DEFAULTS[:code],
         text: Raterr::DEFAULTS[:message] % { time: try_after }
       }
     end
@@ -21,8 +21,12 @@ module Raterr
     end
 
     def proceed
-      attempts = fetch_cache[:attempts]
-      set_cache(attempts + 1)
+      attempts = fetch_cache[:attempts] + 1
+      set_cache(attempts)
+
+      {
+        attempts: attempts
+      }
     end
 
     private
