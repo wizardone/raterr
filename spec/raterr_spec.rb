@@ -22,13 +22,7 @@ RSpec.describe Raterr do
 
   describe '.enforce' do
 
-    let(:request) do
-      Class.new do
-        def ip
-          'some_ip'
-        end
-      end.new
-    end
+    let(:request) { Request.new }
     let(:options) { { period: :minute, max: 5 } }
 
     it 'call the period builder and returns a new period' do
@@ -43,7 +37,7 @@ RSpec.describe Raterr do
     it 'creates a rate limit period and returns the next attempt count' do
       limit = described_class.enforce(request, options)
 
-      expect(limit).to eq attempts: 2
+      expect(limit).to eq status: 200, attempts: 2
     end
 
     it 'creates a rate limit period and returns an exceeded status and message' do

@@ -25,6 +25,7 @@ module Raterr
       set_cache(attempts)
 
       {
+        status: 200,
         attempts: attempts
       }
     end

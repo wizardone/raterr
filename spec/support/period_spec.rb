@@ -24,7 +24,7 @@ RSpec.shared_examples :period do |request, options|
 
   describe '#proceed' do
     it 'proceeds with the request attempts' do
-      expect(subject.proceed).to eq attempts: 2
+      expect(subject.proceed).to eq status: 200, attempts: 2
     end
   end
 end

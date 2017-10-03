@@ -15,4 +15,3 @@ RSpec.describe Raterr::Day do
     end
   end
 end
-
