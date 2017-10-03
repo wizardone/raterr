@@ -1,6 +1,5 @@
 # Raterr
 [![Build Status](https://travis-ci.org/wizardone/raterr.svg?branch=master)](https://travis-ci.org/wizardone/raterr)
-
 [![codecov](https://codecov.io/gh/wizardone/raterr/branch/master/graph/badge.svg)](https://codecov.io/gh/wizardone/raterr)
 
 `Raterr` allows you to enforce rate limiting restrictions on visitors
@@ -22,17 +21,27 @@ Or install it yourself as:
     $ gem install raterr
 
 ## Usage
-For Rails application you need to tell `Raterr` what store to use.
+For Ruby based application you need to tell `Raterr` what store to use.
 Currently it supports a simple hash or a `ActiveSupport::Cache::MemoryStore`
-It is best to do that in an initializer like so:
+It is best to load the store in an initializer of any other kind of file
+that is loaded initially.
 ```ruby
 # Use either
 Raterr::Cache.store = ActiveSupport::Cache::MemoryStore.new
 # Or
 Raterr::Cache.store = Hash.new
 ```
+To enforce rate limiting use:
+```ruby
+Raterr.enforce(request, period: :minute, max: 200, code: 429)
+```
+The result of `Raterr.enforce` is always a pseudo status. In case the
+rate limit has not been reached you will get a pseudo `200` status + the
+number of attempts. This allows you to do additional checks. If
+it has been reached you will get whatever status you configured, or the
+default one, which is 429 + a text message.
 
-Then you can add the limiting on a controller level.
+An example usage in a Rails application would be:
 ```ruby
 class MyController < Base::ApplicationController
   before_action :rate_limit, only: :index
@@ -48,6 +57,8 @@ class MyController < Base::ApplicationController
     if result[:status] == 429
       # Do whatever you want to do when the rate limit is reached
       render plain: result[:text], status: result[:status] and return
+    else
+      puts "Number of attempts: #{result[:attempts]}"
     end
   end
 end
@@ -55,11 +66,11 @@ end
 If you want to add limiting to the whole app you would put it in an
 application controller and so on...
 
-You can configure the period and the max attempts. The allowed periods
-are: `:minute, :hour, :day, :week`
+You can configure the period error code and the max attempts. The allowed periods
+are: `:minute, :hour, :day`.
 
 Currently `Raterr` checks the unique ip address of the visitor to
-determine the amount the visits.
+determine the amount of visits.
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
@@ -68,7 +79,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Stefan Slaveykov/raterr. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/wizardone/raterr. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
