@@ -5,6 +5,8 @@ module Raterr
 
     HOURS_PER_DAY = 24.freeze
 
+    private
+
     def max_per_day
       options[:max]
     end

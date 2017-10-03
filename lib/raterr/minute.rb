@@ -5,6 +5,8 @@ module Raterr
 
     SECONDS_PER_MINUTE = 60.freeze
 
+    private
+
     def max_per_minutes
       options[:max]
     end

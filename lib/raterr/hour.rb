@@ -5,6 +5,8 @@ module Raterr
 
     MINUTES_PER_HOUR = 60.freeze
 
+    private
+
     def max_per_hour
       options[:max]
     end
