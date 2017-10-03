@@ -1,10 +1,9 @@
-require "bundler/setup"
-require "raterr"
 require 'simplecov'
 SimpleCov.start
-
 require 'codecov'
 SimpleCov.formatter = SimpleCov::Formatter::Codecov
+require 'bundler/setup'
+require 'raterr'
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
 
