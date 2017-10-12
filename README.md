@@ -23,7 +23,8 @@ Or install it yourself as:
 
 ## Usage
 For Ruby based application you need to tell `Raterr` what store to use.
-Currently it supports a simple hash or a `ActiveSupport::Cache::MemoryStore`
+Currently it supports a simple hash, `ActiveSupport::Cache::MemoryStore`
+or `Redis`
 It is best to load the store in an initializer of any other kind of file
 that is loaded initially.
 ```ruby
@@ -31,6 +32,8 @@ that is loaded initially.
 Raterr::Cache.store = ActiveSupport::Cache::MemoryStore.new
 # Or
 Raterr::Cache.store = Hash.new
+# Or
+Raterr::Cache.store = Redis.new
 ```
 To enforce rate limiting use:
 ```ruby

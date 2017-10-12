@@ -1,4 +1,5 @@
 require 'active_support'
+require 'redis'
 require 'raterr/version'
 require 'raterr/period_builder'
 require 'raterr/mixin'
@@ -23,7 +24,9 @@ module Raterr
     attr_accessor :store
 
     def enforce(request, **options)
-      unless store.is_a?(Hash) || store.is_a?(::ActiveSupport::Cache::MemoryStore)
+      unless store.is_a?(Hash) ||
+             store.is_a?(::ActiveSupport::Cache::MemoryStore) ||
+             store.is_a?(::Redis)
         raise InvalidStore.new('Store is not valid, please refer to the documentation')
       end
 
