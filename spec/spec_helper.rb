@@ -15,5 +15,5 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before { Raterr.store = Hash.new }
+  config.before { Raterr.store = Redis.new }
 end
