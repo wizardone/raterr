@@ -1,3 +1,4 @@
+require 'byebug'
 module Raterr
   module Mixin
 
@@ -38,16 +39,28 @@ module Raterr
     end
 
     def fetch_cache
-      cache.fetch(identifier) { { attempts: 1, start_time: Time.now } }
+      #StoreContainer.resolve(:fetch)
+      case cache
+      when Hash
+        cache.fetch(identifier) { { attempts: 1, start_time: Time.now } }
+      when Redis
+        JSON.parse(cache.get(identifier) || { attempts: 1, start_time: Time.now }.to_json)
+      end
     end
 
     def set_cache(value)
+      #StoreContainer.resolve(:set)
       cache_attributes = {}.tap do |cache|
         cache[:attempts] = value
         cache[:start_time] = start_time
       end
-      cache.is_a?(Hash) ? cache[identifier] = cache_attributes :
-                          cache.write(identifier, cache_attributes)
+
+      case cache
+      when Hash
+        cache[identifier] = cache_attributes
+      when Redis
+        cache.set(identifier, cache_attributes.to_json)
+      end
     end
 
     def reset_cache
@@ -55,6 +68,7 @@ module Raterr
     end
 
     def cache
+      #StoreContainer.new(Raterr.store)
       Raterr.store
     end
 
