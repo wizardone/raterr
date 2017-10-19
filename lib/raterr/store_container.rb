@@ -3,10 +3,11 @@ module Raterr
 
     STORE_RETRIEVAL_METHODS = %w(get set delete).freeze
 
-    attr_reader :store
+    attr_reader :store, :store_type
 
     def initialize(store)
       @store = store
+      @store_type = store.class.to_s
       register_store_methods
     end
 
@@ -22,7 +23,7 @@ module Raterr
 
     end
 
-    def resolve(method)
+    def resolve(method, args)
 
     end
   end

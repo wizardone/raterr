@@ -15,5 +15,8 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before { Raterr.store = Redis.new }
+  config.before do
+    Raterr.store = Redis.new
+    Raterr.store.flushall
+  end
 end

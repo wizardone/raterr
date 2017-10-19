@@ -1,5 +1,6 @@
 require 'redis'
 require 'raterr/version'
+require 'raterr/store_container'
 require 'raterr/period_builder'
 require 'raterr/mixin'
 require 'raterr/hour'

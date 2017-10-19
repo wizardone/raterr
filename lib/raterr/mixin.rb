@@ -2,7 +2,7 @@ require 'byebug'
 module Raterr
   module Mixin
 
-    attr_reader :request, :options
+    attr_reader :request, :options, :container
 
     def initialize(request, options)
       @request = request
@@ -68,7 +68,7 @@ module Raterr
     end
 
     def cache
-      #StoreContainer.new(Raterr.store)
+      @container ||= StoreContainer.new(Raterr.store)
       Raterr.store
     end
 
