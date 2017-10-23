@@ -1,32 +1,35 @@
+require 'byebug'
 module Raterr
   class StoreContainer
 
     STORE_RETRIEVAL_METHODS = %w(get set delete).freeze
 
-    RESOLVERS = {
-      get: {
-        regular: -> { store.fetch(identifier) { { attempts: 1, start_time: Time.now } } },
-        redis: -> { JSON.parse(cache.get(identifier) || { attempts: 1, start_time: Time.now }.to_json) }
-      },
-      set: {
-        regular: -> (attributes) { store[identifier] = attributes },
-        redis: -> { store.set(identifier, cache_attributes.to_json) }
-      },
-      delete: {
-        regular: -> { store.delete(identifier) },
-        redis: ''
-      }
-    }
+    attr_reader :store, :store_type, :identifier
 
-    attr_reader :store, :store_type
-
-    def initialize(store)
+    def initialize(store:, identifier:)
       @store = store
-      @store_type = store.class.to_s.downcase.to_sym
     end
 
     def resolve(method, attrs = nil)
-      RESOLVERS[method][store_type].call(attrs)
+      store_type = store.class.to_s.downcase.to_sym
+      resolvers[method][store_type].call(attrs)
+    end
+
+    def resolvers
+      {
+        get: {
+          hash: -> (attributes) { store.fetch(identifier) { { attempts: 1, start_time: Time.now } } },
+          redis: -> (attributes) { JSON.parse(cache.get(identifier) || { attempts: 1, start_time: Time.now }.to_json) }
+        },
+        set: {
+          hash: -> (attributes) { store[identifier] = attributes },
+          redis: -> (attributes) { store.set(identifier, attributes.to_json) }
+        },
+        delete: {
+          hash: -> { store.delete(identifier) },
+          redis: ''
+        }
+      }
     end
   end
 end

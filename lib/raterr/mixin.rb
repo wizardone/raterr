@@ -2,7 +2,7 @@ require 'byebug'
 module Raterr
   module Mixin
 
-    attr_reader :request, :options, :container
+    attr_reader :request, :options
 
     def initialize(request, options)
       @request = request
@@ -39,37 +39,24 @@ module Raterr
     end
 
     def fetch_cache
-      #StoreContainer.resolve(:fetch)
-      case cache
-      when Hash
-        cache.fetch(identifier) { { attempts: 1, start_time: Time.now } }
-      when Redis
-        JSON.parse(cache.get(identifier) || { attempts: 1, start_time: Time.now }.to_json)
-      end
+      container.resolve(:get)
     end
 
     def set_cache(value)
-      #StoreContainer.resolve(:set)
       cache_attributes = {}.tap do |cache|
         cache[:attempts] = value
         cache[:start_time] = start_time
       end
 
-      case cache
-      when Hash
-        cache[identifier] = cache_attributes
-      when Redis
-        cache.set(identifier, cache_attributes.to_json)
-      end
+      container.resolve(:set, cache_attributes)
     end
 
     def reset_cache
       cache.delete(identifier)
     end
 
-    def cache
-      @container ||= StoreContainer.new(Raterr.store)
-      Raterr.store
+    def container
+      @container ||= StoreContainer.new(store: Raterr.store, identifier: identifier)
     end
 
     def start_time
