@@ -18,11 +18,11 @@ module Raterr
 
     def allowed?
       reset_cache if Time.now > rate_period
-      fetch_cache[:attempts] <= max_per_period
+      fetch_cache['attempts'] <= max_per_period
     end
 
     def proceed
-      attempts = fetch_cache[:attempts] + 1
+      attempts = fetch_cache['attempts'] + 1
       set_cache(attempts)
 
       {
@@ -44,8 +44,8 @@ module Raterr
 
     def set_cache(value)
       cache_attributes = {}.tap do |cache|
-        cache[:attempts] = value
-        cache[:start_time] = start_time
+        cache['attempts'] = value
+        cache['start_time'] = start_time
       end
 
       container.resolve(:set, cache_attributes)
@@ -60,7 +60,7 @@ module Raterr
     end
 
     def start_time
-      fetch_cache[:start_time]
+      fetch_cache['start_time']
     end
   end
 end
