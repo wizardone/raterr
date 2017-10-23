@@ -3,28 +3,30 @@ module Raterr
 
     STORE_RETRIEVAL_METHODS = %w(get set delete).freeze
 
+    RESOLVERS = {
+      get: {
+        regular: -> { store.fetch(identifier) { { attempts: 1, start_time: Time.now } } },
+        redis: -> { JSON.parse(cache.get(identifier) || { attempts: 1, start_time: Time.now }.to_json) }
+      },
+      set: {
+        regular: -> (attributes) { store[identifier] = attributes },
+        redis: -> { store.set(identifier, cache_attributes.to_json) }
+      },
+      delete: {
+        regular: -> { store.delete(identifier) },
+        redis: ''
+      }
+    }
+
     attr_reader :store, :store_type
 
     def initialize(store)
       @store = store
-      @store_type = store.class.to_s
-      register_store_methods
+      @store_type = store.class.to_s.downcase.to_sym
     end
 
-    private
-
-    def register_store_methods
-      STORE_RETRIEVAL_METHODS.each {|method| register(method)}
-    end
-
-    # Register something like:
-    # StoreContainer.register(:get, -> { store.fetch })
-    def register(method)
-
-    end
-
-    def resolve(method, args)
-
+    def resolve(method, attrs = nil)
+      RESOLVERS[method][store_type].call(attrs)
     end
   end
 end
