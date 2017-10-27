@@ -52,7 +52,7 @@ module Raterr
     end
 
     def reset_cache
-      cache.delete(identifier)
+      container.resolve(:delete, identifier)
     end
 
     def container
@@ -60,7 +60,11 @@ module Raterr
     end
 
     def start_time
-      fetch_cache['start_time']
+      start_time = fetch_cache['start_time']
+      # Depending on the storage option start_time can be
+      # either a Time object or a string
+      return Time.parse(start_time) if start_time.is_a?(String)
+      start_time
     end
   end
 end
