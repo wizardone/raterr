@@ -1,4 +1,3 @@
-require 'byebug'
 module Raterr
   class StoreContainer
 
@@ -6,6 +5,7 @@ module Raterr
 
     def initialize(store:, identifier:)
       @store = store
+      @identifier = identifier
     end
 
     def resolve(method, attrs = nil)
@@ -24,8 +24,8 @@ module Raterr
           redis: -> (attributes) { store.set(identifier, attributes.to_json) }
         },
         delete: {
-          hash: -> { store.delete(identifier) },
-          redis: ''
+          hash: -> (identifier) { store.delete(identifier) },
+          redis: -> (identifier) { store.del(identifier) }
         }
       }
     end

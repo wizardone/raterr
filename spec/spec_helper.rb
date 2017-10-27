@@ -16,7 +16,7 @@ RSpec.configure do |config|
   end
 
   config.before do
-    Raterr.store = Hash.new
-    #Raterr.store.flushall
+    Raterr.store = Redis.new
+    Raterr.store.flushall
   end
 end
