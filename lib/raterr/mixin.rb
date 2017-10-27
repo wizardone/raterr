@@ -17,11 +17,11 @@ module Raterr
 
     def allowed?
       reset_cache if Time.now > rate_period
-      fetch_cache[:attempts] <= max_per_period
+      fetch_cache['attempts'] <= max_per_period
     end
 
     def proceed
-      attempts = fetch_cache[:attempts] + 1
+      attempts = fetch_cache['attempts'] + 1
       set_cache(attempts)
 
       {
@@ -38,28 +38,32 @@ module Raterr
     end
 
     def fetch_cache
-      cache.fetch(identifier) { { attempts: 1, start_time: Time.now } }
+      container.resolve(:get)
     end
 
     def set_cache(value)
       cache_attributes = {}.tap do |cache|
-        cache[:attempts] = value
-        cache[:start_time] = start_time
+        cache['attempts'] = value
+        cache['start_time'] = start_time
       end
-      cache.is_a?(Hash) ? cache[identifier] = cache_attributes :
-                          cache.write(identifier, cache_attributes)
+
+      container.resolve(:set, cache_attributes)
     end
 
     def reset_cache
-      cache.delete(identifier)
+      container.resolve(:delete, identifier)
     end
 
-    def cache
-      Raterr.store
+    def container
+      @container ||= StoreContainer.new(store: Raterr.store, identifier: identifier)
     end
 
     def start_time
-      fetch_cache[:start_time]
+      start_time = fetch_cache['start_time']
+      # Depending on the storage option start_time can be
+      # either a Time object or a string
+      return Time.parse(start_time) if start_time.is_a?(String)
+      start_time
     end
   end
 end

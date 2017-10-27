@@ -3,6 +3,7 @@ SimpleCov.start
 require 'codecov'
 SimpleCov.formatter = SimpleCov::Formatter::Codecov
 require 'bundler/setup'
+require 'timecop'
 require 'raterr'
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
@@ -15,5 +16,12 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before { Raterr.store = Hash.new }
+  config.before do
+    if ENV["RATERR_TEST_REDIS"]
+      Raterr.store = Redis.new
+      Raterr.store.flushall
+    elsif ENV["RATERR_TEST_HASH"]
+      Raterr.store = Hash.new
+    end
+  end
 end
