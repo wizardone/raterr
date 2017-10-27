@@ -16,7 +16,11 @@ RSpec.configure do |config|
   end
 
   config.before do
-    Raterr.store = Redis.new
-    Raterr.store.flushall
+    if ENV["RATERR_TEST_REDIS"]
+      Raterr.store = Redis.new
+      Raterr.store.flushall
+    elsif ENV["RATERR_TEST_HASH"]
+      Raterr.store = Hash.new
+    end
   end
 end
