@@ -3,6 +3,7 @@ SimpleCov.start
 require 'codecov'
 SimpleCov.formatter = SimpleCov::Formatter::Codecov
 require 'bundler/setup'
+require 'timecop'
 require 'raterr'
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }

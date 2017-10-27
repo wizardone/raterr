@@ -16,4 +16,15 @@ RSpec.describe Raterr::Day do
         .to eq status: 429, text: "Rate limit exceeded. Try again in #{repeat_period} hours."
     end
   end
+
+  describe 'resetting the cache if the time period was exceeded' do
+    it 'resets the cache' do
+      5.times { subject.proceed }
+      expect(subject.allowed?).to eq false
+
+      Timecop.freeze(Time.now + (3600 * Raterr::Day::HOURS_PER_DAY)) do
+        expect(subject.allowed?).to eq true
+      end
+    end
+  end
 end
