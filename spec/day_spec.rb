@@ -10,8 +10,10 @@ RSpec.describe Raterr::Day do
 
   describe '#rate_limit_exceeded' do
     it 'returns a limit exceeded status and message' do
+      repeat_period = Raterr.store == Hash.new ? REPEAT_PERIODS[:day][:hash] :
+                                                 REPEAT_PERIODS[:day][:redis]
       expect(subject.rate_limit_exceeded)
-        .to eq status: 429, text: 'Rate limit exceeded. Try again in 24 hours.'
+        .to eq status: 429, text: "Rate limit exceeded. Try again in #{repeat_period} hours."
     end
   end
 end

@@ -1,5 +1,5 @@
 require 'spec_helper'
-
+require 'byebug'
 RSpec.describe Raterr::Minute do
 
   let(:request) { Request.new }
@@ -10,8 +10,10 @@ RSpec.describe Raterr::Minute do
 
   describe '#rate_limit_exceeded' do
     it 'returns a limit exceeded status and message' do
+      repeat_period = Raterr.store == Hash.new ? REPEAT_PERIODS[:minute][:hash] :
+                                                 REPEAT_PERIODS[:minute][:redis]
       expect(subject.rate_limit_exceeded)
-        .to eq status: 429, text: 'Rate limit exceeded. Try again in 60 seconds.'
+        .to eq status: 429, text: "Rate limit exceeded. Try again in #{repeat_period} seconds."
     end
   end
 end
