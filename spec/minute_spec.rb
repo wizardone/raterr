@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'byebug'
 RSpec.describe Raterr::Minute do
 
   let(:request) { Request.new }
