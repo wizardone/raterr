@@ -28,9 +28,9 @@ It is best to load the store in an initializer of any other kind of file
 that is loaded initially.
 ```ruby
 # Use either
-Raterr::Cache.store = Hash.new
+Raterr.store = Hash.new
 # Or
-Raterr::Cache.store = Redis.new
+Raterr.store = Redis.new
 ```
 To enforce rate limiting use:
 ```ruby
